@@ -28,6 +28,11 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
+    - name: Decrypt GPG key
+      run: |
+        echo "${{ secrets.GPG_SIGNING_KEY }}" | base64 --decode | gpg --import
+        echo "${{ secrets.GPG_SIGNING_KEY_PASSWORD }}" | gpg --batch --yes --passphrase-fd 0 --edit-key <your-key-id> trust quit
+
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
       env:
